@@ -1,3 +1,7 @@
+<a href="?tab=readme-ov-file#prerequisites">Prerequisites</a>
+<a href="?tab=readme-ov-file#setup-instructions">Setup instructions</a>
+<a href="?tab=readme-ov-file#additional-notes">Additional notes</a>
+
 ![SPA screenshot](./Screenshot.png)
 
 # Prerequisites:
