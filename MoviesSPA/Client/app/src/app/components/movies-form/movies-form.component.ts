@@ -9,7 +9,6 @@ import { MatSelectChange } from '@angular/material/select';
   selector: 'app-movies-form',
   standalone: false,
   templateUrl: './movies-form.component.html',
-  styleUrl: './movies-form.component.scss',
 })
 export class MoviesFormComponent {
   // Filtering

@@ -5,7 +5,6 @@ import { Movie } from '../../data/movies.interface';
   selector: 'app-favorites',
   standalone: false,
   templateUrl: './favorites.component.html',
-  styleUrl: './favorites.component.scss',
 })
 export class FavoritesComponent {
   favoriteMovies: Movie[] = [];

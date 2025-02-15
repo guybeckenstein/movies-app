@@ -5,7 +5,6 @@ import { Movie } from '../../data/movies.interface';
   selector: 'app-movie-card',
   standalone: false,
   templateUrl: './movie-card.component.html',
-  styleUrl: './movie-card.component.scss',
 })
 export class MovieCardComponent {
   @Input({ required: true }) movie!: Movie;
