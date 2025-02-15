@@ -25,6 +25,7 @@ namespace Services.Services
         {
             _logger.LogInformation($"ExternalApiService.GetMovies - Starting request{Environment.NewLine}" +
                 $"{url}");
+            // HTTP request using flurl as HTTP client
             var movies = await $"{url}"
                 .GetJsonAsync<List<MovieRequest>>();
             var res = new List<MovieResponse>();
@@ -36,7 +37,8 @@ namespace Services.Services
             }
             else
             {
-
+                // Not using AutoMapper because it breaks the code
+                // Instead of a List<MovieRequest>, returning List<MovieResponse>
                 res = movies
                     .Select(movie =>
                     new MovieResponse
