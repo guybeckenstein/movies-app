@@ -12,7 +12,7 @@ namespace Api.Controllers
         private readonly IConfiguration _configuration;
         private readonly IAuthService _authService;
 
-        public AuthController(IConfiguration configuration, 
+        public AuthController(IConfiguration configuration,
             IAuthService authService)
         {
             _configuration = configuration;
@@ -56,9 +56,15 @@ namespace Api.Controllers
             // Set the cookie with the JWT token
             Response.Cookies.Append("jwt", cookieToken, new CookieOptions
             {
-                HttpOnly = true,
-                Secure = true,
-                SameSite = SameSiteMode.Strict,
+                #if (DEBUG)
+                    HttpOnly = false,
+                    SameSite = SameSiteMode.None,
+                    Secure = false,
+                #else
+                    HttpOnly = true,
+                    SameSite = SameSiteMode.Strict,
+                    Secure = true,
+                #endif
                 Expires = DateTime.UtcNow.AddDays(1)
             });
             return Ok(cookieToken);

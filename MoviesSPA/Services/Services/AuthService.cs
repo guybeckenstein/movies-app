@@ -70,7 +70,7 @@ namespace Services.Services
                 var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha512);
 
                 var tokenDescriptor = new JwtSecurityToken(
-                    issuer: "https://localhost:7221",
+                    issuer: "http://localhost:4200",
                     audience: "http://localhost:4200",
                     claims: claims,
                     expires: DateTime.UtcNow.AddDays(1),

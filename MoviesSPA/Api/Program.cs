@@ -81,7 +81,6 @@ builder.Services.AddAuthorization();
 builder.Services.Configure<ApiBehaviorOptions>(options => options.SuppressModelStateInvalidFilter = true);
 
 var app = builder.Build();
-app.UseCors("AllowLocalhost");
 // Registering middleware
 app.UseMiddleware<LoggingMiddleware>();
 // Configure the HTTP request pipeline.
@@ -95,7 +94,8 @@ if (app.Environment.IsDevelopment())
     app.MapScalarApiReference();
 }
 
-//app.UseHttpsRedirection();
+//app.UseHttpsRedirection(); - unused because client runs on HTTP
+app.UseCors("AllowLocalhost");
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();

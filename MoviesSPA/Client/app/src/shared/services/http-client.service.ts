@@ -35,9 +35,13 @@ export class HttpClientService {
     return this.http
       .get<T>(`${this.apiBaseUrl}/${endpoint}`, {
         headers: headers
-          ? headers.append('Authorization', `Bearer ${getCookie('jwt')}`)
+          ? headers.append(
+              'Authorization',
+              this.authHeaders.get('jwt') ?? `Bearer ${getCookie('jwt')}`
+            )
           : this.authHeaders,
         params: params,
+        withCredentials: true,
       })
       .pipe(catchError(this.handleError));
   }
@@ -47,8 +51,12 @@ export class HttpClientService {
     return this.http
       .post<T>(`${this.apiBaseUrl}/${endpoint}`, body, {
         headers: headers
-          ? headers.append('Authorization', `Bearer ${getCookie('jwt')}`)
+          ? headers.append(
+              'Authorization',
+              this.authHeaders.get('jwt') ?? `Bearer ${getCookie('jwt')}`
+            )
           : this.authHeaders,
+        withCredentials: true,
       })
       .pipe(catchError(this.handleError));
   }

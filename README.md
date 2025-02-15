@@ -1,6 +1,6 @@
 ![SPA screenshot](./Screenshot.png)
 
-# Prequesites:
+# Prerequisites:
 
 1. NodeJS 22.14.0
 2. Angular 19
@@ -19,10 +19,9 @@
 5. Make HTTP requests in this order, using **Postman** or **Scalar**:
    1. `api/Auth/register`
    2. `api/Auth/login`
-   3. `api/Movies/` - because using JWT tokens only work here
-6. Go to `localhost:4200` (make sure the `[Authorize]` and `[ServiceFilter(typeof(ValidationFilterAttribute))]` filters are commented!! Code won't work otherwise due to bearer issues).
+   3. `api/Movies/`
 
 # Additional notes:
 
-1. **Currently, `[Authorize]` and `[ServiceFilter(typeof(ValidationFilterAttribute))]` filters are commented, because they break the code if a request is being sent from localhost:4200 to localhost:7221. If the request is from localhost:7221 then it's ok.**
+1. `[ServiceFilter(typeof(ValidationFilterAttribute))]` filter logic is not implemented from _localhost:4200_ host request, because it breaks the code. **When running the requests from `localhost:7221` the logic is used**
 2. The focus here is not on styling the webpage elements
