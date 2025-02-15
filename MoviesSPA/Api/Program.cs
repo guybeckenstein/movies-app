@@ -3,100 +3,96 @@ using Scalar.AspNetCore;
 using Serilog;
 using Services.Services.Interfaces;
 using Services.Services;
-using Api.Profiles;
+using System.Text;
+using Api.ActionFilters;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 
-public class Program
+var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddSwaggerGen();
+// Log file configuration
+builder.Logging.ClearProviders();
+Log.Logger = new LoggerConfiguration()
+    .ReadFrom.Configuration(builder.Configuration)
+    .CreateLogger();
+// Serilog is logging provider
+builder.Logging.AddSerilog(Log.Logger);
+// Dependency injection
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IExternalApiService, ExternalApiService>();
+// Add services to the container.
+builder.Services.AddControllers();
+// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddEndpointsApiExplorer();
+
+builder.Services.AddAutoMapper(typeof(Program));
+// Registering action filters
+builder.Services.AddScoped<ValidationFilterAttribute>();
+
+builder.Services.AddCors(options =>
 {
-    public static void Main(string[] args)
+    options.AddPolicy("CorsPolicy", builder => builder
+                                                .WithOrigins("http://localhost:4200")
+                                                .AllowAnyMethod()
+                                                .AllowAnyHeader()
+                                                .AllowCredentials());
+});
+
+builder.Services
+    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
     {
-        var builder = WebApplication.CreateBuilder(args);
-
-        builder.Logging.ClearProviders();
-        // Log file configuration
-        Log.Logger = new LoggerConfiguration()
-            .ReadFrom.Configuration(builder.Configuration)
-            .CreateLogger();
-        // Serilog is logging provider
-        builder.Logging.AddSerilog(Log.Logger);
-        // Dependency injection
-        builder.Services.AddScoped<IExternalApiService, ExternalApiService>();
-        // Add services to the container.
-        builder.Services.AddControllers();
-        // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-        builder.Services.AddEndpointsApiExplorer();
-        builder.Services.AddSwaggerGen();
-
-        builder.Services.AddAutoMapper(typeof(MovieProfile));
-
-        var app = builder.Build();
-        // Registering middleware
-        app.UseMiddleware<LoggingMiddleware>();
-        // Dependency injection
-        // TODO: add dependency injection
-        // Configure the HTTP request pipeline.
-        if (app.Environment.IsDevelopment())
+        options.Events = new JwtBearerEvents
         {
-            app.UseSwagger(options =>
+            OnMessageReceived = context =>
             {
-                options.RouteTemplate = "/openapi/{documentName}.json";
-            });
-            app.MapScalarApiReference();
-        }
-
-        app.UseHttpsRedirection();
-        app.UseAuthorization();
-        app.MapControllers();
-
-        app.Run();
-    }
-
-    public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder =>
+                // Get the token from the cookie instead of Authorization header
+                if (context.Request.Cookies.TryGetValue("jwt", out var token))
                 {
-                    webBuilder.ConfigureServices(services =>
-                    {
-                        // Add Authentication service
-                        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                            .AddJwtBearer(options =>
-                            {
-                                options.RequireHttpsMetadata = false;
-                                options.Authority = "https://your-auth-server.com";  // JWT issuer URL (e.g., IdentityServer or Auth0)
-                                options.Audience = "your-api-name";  // JWT Audience (your API name)
-                                options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
-                                {
-                                    ValidateIssuer = true,
-                                    ValidateAudience = true,
-                                    ValidateLifetime = true,
-                                    ValidIssuer = "https://your-auth-server.com",
-                                    ValidAudience = "your-api-name",
-                                    ClockSkew = TimeSpan.Zero  // Optional: Set Clock Skew for token expiry tolerance
-                                };
-                            });
+                    context.Token = token;
+                }
+                return Task.CompletedTask;
+            }
+        };
+        options.RequireHttpsMetadata = false;
+        options.SaveToken = true;
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration.GetSection("JwtSettings")["Token"] ?? throw new ArgumentNullException("JWT Secret key is missing"))),
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidIssuer = builder.Configuration.GetSection("JwtSettings")["Issuer"],
+            ValidAudience = builder.Configuration.GetSection("JwtSettings")["Audience"],
+            ValidateLifetime = true,
+        };
+    });
 
-                        // Add controllers and other services
-                        services.AddControllers();
+builder.Services.AddAuthorization();
 
-                        // Add AutoMapper and any other required services
-                        services.AddAutoMapper(typeof(MovieProfile));
+builder.Services.Configure<ApiBehaviorOptions>(options => options.SuppressModelStateInvalidFilter = true);
 
-                    })
-                    .Configure(app =>
-                    {
-                        app.UseAuthentication(); // Add Authentication middleware
-                        app.UseAuthorization();  // Add Authorization middleware
-
-                        app.UseEndpoints(endpoints =>
-                        {
-                            endpoints.MapControllers();
-                        });
-                    });
-                });
-
-    public void Configure(IApplicationBuilder app)
+var app = builder.Build();
+app.UseCors("CorsPolicy");
+// Registering middleware
+app.UseMiddleware<LoggingMiddleware>();
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger(options =>
     {
-        app.UseAuthentication();  // Must be before UseAuthorization
-        app.UseAuthorization();
-    }
+        options.RouteTemplate = "/openapi/{documentName}.json";
+    });
+    app.UseSwaggerUI();
+    app.MapScalarApiReference();
 }
+
+app.UseHttpsRedirection();
+app.UseRouting();
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.MapControllers();
+
+app.Run();

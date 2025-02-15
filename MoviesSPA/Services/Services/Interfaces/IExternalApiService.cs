@@ -1,4 +1,4 @@
-﻿using Models.Models;
+﻿using Models.DTOs;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -6,6 +6,6 @@ namespace Services.Services.Interfaces
 {
     public interface IExternalApiService
     {
-        Task<List<MovieRequest>> GetMovies(string url);
+        Task<List<MovieResponse>> GetMovies(string url);
     }
 }
