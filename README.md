@@ -1,3 +1,5 @@
+![SPA screenshot](./Screenshot.png)
+
 # Prequesites:
 
 1. NodeJS 22.14.0
