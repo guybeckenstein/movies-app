@@ -1,0 +1,69 @@
+@if (displayErrorMessage === true) {
+<mat-card style="width: max-content; padding: 1rem">
+  <mat-card-title>Cannot display movies due to server error</mat-card-title>
+</mat-card>
+} @else {
+<div>
+  <!-- Sorting dropdown -->
+  <mat-form-field appearance="outline">
+    <mat-label>Sort by</mat-label>
+    <mat-select (selectionChange)="onSortChange($event.value)">
+      <mat-option value="">None</mat-option>
+      <mat-option value="title">Title Ascending</mat-option>
+      <mat-option value="titleDesc">Title Descending</mat-option>
+      <mat-option value="year">Year Ascending</mat-option>
+      <mat-option value="yearDesc">Year Descending</mat-option>
+    </mat-select>
+  </mat-form-field>
+  <!-- Genre filter dropdown -->
+  <mat-form-field appearance="outline">
+    <mat-label>Filter by Genre</mat-label>
+    <mat-select (selectionChange)="onGenreChange($event.value)">
+      <mat-option value="">All</mat-option>@for (genre of genres; track $index)
+      {
+      <mat-option [value]="genre">{{ genre }}</mat-option>
+      }
+      <mat-option *ngFor="let genre of genres" [value]="genre">{{
+        genre
+      }}</mat-option>
+    </mat-select>
+  </mat-form-field>
+  <!-- Year filter dropdown -->
+  <mat-form-field appearance="outline">
+    <mat-label>Filter by Year</mat-label>
+    <mat-select (selectionChange)="onYearChange($event.value)">
+      <mat-option value="">All</mat-option>
+      @for (year of years; track $index) {
+      <mat-option [value]="year">{{ year }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+  <!-- Search movie -->
+  <mat-form-field appearance="outline">
+    <mat-label>Search...</mat-label>
+    <input
+      matInput
+      [formControl]="searchQueryControl"
+      (keydown)="onKeyDown($event)"
+    />
+  </mat-form-field>
+  <button mat-raised-button color="primary" (click)="onSearchButtonClick()">
+    Search
+  </button>
+</div>
+
+@if (filteredMovies.length > 0) {
+<div style="display: flex; flex-direction: column; gap: 2rem; width: 300px">
+  @for (movie of movies; track $index) { @if (isMovieInFilteredList(movie)) {
+  <app-movie-card
+    [movie]="movie"
+    [isFavorite]="isFavoriteMovie(movie)"
+    (isFavoriteSelected)="updateFavorites($event)"
+  ></app-movie-card>
+  } }
+</div>
+} @else {
+<mat-card>
+  <mat-card-title>No movies to display</mat-card-title>
+</mat-card>
+}}

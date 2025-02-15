@@ -6,7 +6,7 @@ using Services.Services.Interfaces;
 namespace Api.Controllers
 {
 
-    [Authorize]
+    // [Authorize] - commented, because it only works with postman/scalar
     [ApiController]
     [Route("api/[controller]")]
     public class MoviesController : ControllerBase
@@ -22,7 +22,7 @@ namespace Api.Controllers
         }
 
         [HttpGet(Name = "/")]
-        [ServiceFilter(typeof(ValidationFilterAttribute))]
+        // [ServiceFilter(typeof(ValidationFilterAttribute))] - commented, because it only works with postman/scalar
         public async Task<IActionResult> GetMoviesAsync()
         {
             var moviesApiUrl = _configuration["ExternalLinks:Data:Movies"] 

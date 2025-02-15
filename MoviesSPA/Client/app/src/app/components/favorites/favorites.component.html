@@ -1,0 +1,16 @@
+<h1 style="margin-bottom: 1rem">Favorite Movies</h1>
+
+@if (favoriteMovies.length > 0) {
+<div style="display: flex; flex-wrap: wrap; gap: 2rem">
+  @for (movie of favoriteMovies; track $index) {
+  <app-movie-card
+    [movie]="movie"
+    [isFavorite]="true"
+    [showButton]="false"
+    (isFavoriteSelected)="removeFavorite(movie)"
+  ></app-movie-card>
+  }
+</div>
+} @else {
+<div>No favorite movies yet.</div>
+}

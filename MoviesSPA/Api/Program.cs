@@ -30,13 +30,16 @@ builder.Services.AddAutoMapper(typeof(Program));
 // Registering action filters
 builder.Services.AddScoped<ValidationFilterAttribute>();
 
+// Add CORS configuration
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("CorsPolicy", builder => builder
-                                                .WithOrigins("http://localhost:4200")
-                                                .AllowAnyMethod()
-                                                .AllowAnyHeader()
-                                                .AllowCredentials());
+    options.AddPolicy("AllowLocalhost", policy =>
+    {
+        policy.WithOrigins("http://localhost:4200")
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
+    });
 });
 
 builder.Services
@@ -60,12 +63,16 @@ builder.Services
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration.GetSection("JwtSettings")["Token"] ?? throw new ArgumentNullException("JWT Secret key is missing"))),
             ValidateIssuer = true,
             ValidateAudience = true,
-            ValidIssuer = builder.Configuration.GetSection("JwtSettings")["Issuer"],
-            ValidAudience = builder.Configuration.GetSection("JwtSettings")["Audience"],
             ValidateLifetime = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration.GetSection("JwtSettings")["Token"] ?? throw new ArgumentNullException("JWT Secret key is missing"))),
+            ValidIssuer = builder.Configuration.GetSection("JwtSettings")["Issuer"],
+            ValidAudiences = new List<string>
+            {
+                builder.Configuration.GetSection("JwtSettings")["Audience1"]!,
+                builder.Configuration.GetSection("JwtSettings")["Audience2"]!,
+            },
         };
     });
 
@@ -74,7 +81,7 @@ builder.Services.AddAuthorization();
 builder.Services.Configure<ApiBehaviorOptions>(options => options.SuppressModelStateInvalidFilter = true);
 
 var app = builder.Build();
-app.UseCors("CorsPolicy");
+app.UseCors("AllowLocalhost");
 // Registering middleware
 app.UseMiddleware<LoggingMiddleware>();
 // Configure the HTTP request pipeline.
@@ -88,7 +95,7 @@ if (app.Environment.IsDevelopment())
     app.MapScalarApiReference();
 }
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();

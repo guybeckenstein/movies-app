@@ -71,7 +71,7 @@ namespace Services.Services
 
                 var tokenDescriptor = new JwtSecurityToken(
                     issuer: "https://localhost:7221",
-                    audience: "https://localhost:4200",
+                    audience: "http://localhost:4200",
                     claims: claims,
                     expires: DateTime.UtcNow.AddDays(1),
                     signingCredentials: credentials

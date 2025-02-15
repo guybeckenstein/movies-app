@@ -1,0 +1,16 @@
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>{{ movie.title }}</mat-card-title>
+    <mat-card-subtitle>{{ movie.year }}</mat-card-subtitle>
+  </mat-card-header>
+
+  <img mat-card-image [src]="movie.posterImg" alt="{{ movie.title }}" />
+
+  @if (showButton === true) {
+  <mat-card-actions>
+    <button mat-button color="primary" (click)="onToggleFavoriteButton()">
+      {{ isFavorite ? "Remove from Favorites" : "Add to Favorites" }}
+    </button>
+  </mat-card-actions>
+  }
+</mat-card>
