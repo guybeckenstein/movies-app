@@ -1,55 +1,83 @@
-﻿using Microsoft.Extensions.Logging;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Api;
+using System.Net;
+using System.Net.Http;
+using System.Threading.Tasks;
+using FluentAssertions;
+using Microsoft.AspNetCore.Mvc.Testing;
+using Xunit;
+using Newtonsoft.Json;
+using Models.Models;
 using Models.DTOs;
-using Services.Services;
-using Services.Services.Interfaces;
-using System;
-using System.IdentityModel.Tokens.Jwt;
+using Tests.Util;
 
 namespace Tests
 {
-    [TestClass]
-    class AuthControllerUnitTest
+    public class AuthControllerUnitTest : IClassFixture<WebApplicationFactory<Program>>
     {
-        private readonly IAuthService _authService;
-        private readonly UserDto mockUser;
-        private readonly string token;
+        private readonly HttpClient _client;
 
-        [TestInitialize]
-        public void Setup()
+        public AuthControllerUnitTest(WebApplicationFactory<Program> factory)
         {
-            // TODO
+            _client = factory.CreateClient();
         }
 
-        public AuthControllerUnitTest(IAuthService authService)
+        [Fact]
+        public async Task Register_ShouldReturn400BadRequest()
         {
-            _authService = authService;
+            var byteContent = RequestExtensions.CreateRequestBody(null);
+            var response = await _client.PostAsync("/api/Auth/register", byteContent);
 
-            mockUser = new UserDto
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        }
+
+        [Fact]
+        public async Task Register_ShouldReturn200OK()
+        {
+            var byteContent = RequestExtensions.CreateRequestBody(new UserDto
             {
-                Username = "654321",
-                Password = "123456",
-            };
+                Username = "123456",
+                Password = "654321",
+            });
+            var response = await _client.PostAsync("/api/Auth/register", byteContent);
 
-            token = "MySuperSecureAndRandomKeyThatLooksJustAwesomeAndNeddsToBeVeryVeryLong!!!111oneeleven";
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+            var content = await response.Content.ReadAsStringAsync();
+            var result = JsonConvert.DeserializeObject<User>(content);
+
+            result.Username.Should().NotBeNull();
+            result.PasswordHash.Should().NotBeNull();
         }
 
-        [TestMethod]
-        public void RegisterServiceTest()
+        [Fact]
+        public async Task Login_ShouldReturn400BadRequest()
         {
-            var resUser = _authService.Register(mockUser);
+            var byteContent = RequestExtensions.CreateRequestBody(new UserDto
+            {
+                Username = "123456",
+                Password = "654321",
+            });
+            var response = await _client.PostAsync("/api/Auth/login", byteContent);
 
-            Assert.AreEqual(mockUser.Username, resUser.Username);
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         }
 
-        [TestMethod]
-        public void LoginServiceTest()
+        [Fact]
+        public async Task RegisterAndLogin_ShouldReturn200Ok()
         {
-            var jwtToken = _authService.Login(mockUser, token);
-            var handler = new JwtSecurityTokenHandler();
-            var jwtSecurityToken = handler.ReadJwtToken(jwtToken);
+            var byteContent = RequestExtensions.CreateRequestBody(new UserDto
+            {
+                Username = "123456",
+                Password = "654321",
+            });
+            await _client.PostAsync("/api/Auth/register", byteContent);
+            var response = await _client.PostAsync("/api/Auth/login", byteContent);
 
-            Console.WriteLine();
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+            var result = await response.Content.ReadAsStringAsync();
+
+            result.Should().NotBeNull();
         }
     }
 }

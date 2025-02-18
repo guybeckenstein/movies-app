@@ -22,6 +22,10 @@ namespace Api.Controllers
         [HttpPost("register", Name = "register")]
         public ActionResult<User> Register([FromBody] UserDto user)
         {
+            if (user is null)
+            {
+                return BadRequest("Request body cannot be empty.");
+            }
             // Checks if there is already a JWT token cookie
             if (Request.Cookies.TryGetValue("jwt", out var token))
             {
@@ -40,6 +44,10 @@ namespace Api.Controllers
         [HttpPost("login", Name = "login")]
         public ActionResult<User> Login([FromBody] UserDto user)
         {
+            if (user is null)
+            {
+                return BadRequest("Request body cannot be empty.");
+            }
             // Checks if there is already a JWT token cookie
             if (Request.Cookies.TryGetValue("jwt", out var token))
             {
@@ -59,12 +67,11 @@ namespace Api.Controllers
                 #if (DEBUG)
                     HttpOnly = false,
                     SameSite = SameSiteMode.None,
-                    Secure = false,
                 #else
                     HttpOnly = true,
                     SameSite = SameSiteMode.Strict,
-                    Secure = true,
                 #endif
+                Secure = true,
                 Expires = DateTime.UtcNow.AddDays(1)
             });
             return Ok(cookieToken);

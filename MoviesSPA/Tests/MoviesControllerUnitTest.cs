@@ -1,50 +1,82 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Flurl.Http;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Models.DTOs;
 using Models.Models;
-using Services.Services.Interfaces;
+using Microsoft.AspNetCore.Mvc.Testing;
+using System.Net.Http;
+using System.Net;
+using Xunit;
+using Api;
+using FluentAssertions;
+using Newtonsoft.Json;
+using System.Net.Http.Headers;
+using Tests.Util;
 
 namespace Tests
 {
-    [TestClass]
-    public class MoviesControllerUnitTest
+    public class MoviesControllerUnitTest : IClassFixture<WebApplicationFactory<Program>>
     {
-        private IExternalApiService _externalApiService;
-        private string _moviesUrl;
+        private readonly HttpClient _client;
 
-        [TestInitialize]
-        public void Setup()
+        public MoviesControllerUnitTest(WebApplicationFactory<Program> factory)
         {
-            // TODO
+            _client = factory.CreateClient();
         }
 
-        public MoviesControllerUnitTest(IExternalApiService externalApiService)
+        [Fact]
+        public async Task GetExternalUrl_ShouldReturn200OK()
         {
-            _externalApiService = externalApiService;
-            _moviesUrl = "https://gist.githubusercontent.com/saniyusuf/406b843afdfb9c6a86e25753fe2761f4/raw/523c324c7fcc36efab8224f9ebb7556c09b69a14/Film.JSON";
+            using var httpClient = new HttpClient(); // Different server than `https://localhost:7221`
+            var response = await httpClient.GetAsync("https://gist.githubusercontent.com/saniyusuf/406b843afdfb9c6a86e25753fe2761f4/raw/523c324c7fcc36efab8224f9ebb7556c09b69a14/Film.JSON");
+
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+            var content = await response.Content.ReadAsStringAsync();
+            var result = JsonConvert.DeserializeObject<List<MovieRequest>>(content);
+
+            result.Should().AllSatisfy(movie => movie.Title.Should().NotBeNullOrEmpty());
+            result.Should().AllSatisfy(movie => movie.Genre.Should().NotBeNullOrEmpty());
+            result.Should().AllSatisfy(movie => movie.Year.Should().NotBeNullOrEmpty());
+            result.Should().AllSatisfy(movie => movie.Poster.Should().NotBeNullOrEmpty());
         }
 
-        [TestMethod]
-        public async Task ExternalUrlTest()
+        [Fact]
+        public async Task GetMovies_ShouldReturn401Unauthorized()
         {
-            // Testing the external URL get request, validating it's service is returning status code 200
-            var response = await $"{_moviesUrl}"
-                .GetAsync();
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "Wrong JWT token");
+            var response = await _client.GetAsync("/api/movies");
 
-            Assert.AreEqual(response.StatusCode, 200);
+            response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+            response.Headers.WwwAuthenticate
+                .Should().ContainSingle().Which.ToString()
+                .Should().BeEquivalentTo(@"Bearer error=""invalid_token""");
         }
 
-        [TestMethod]
-        public async Task GetMoviesServiceTest()
+        [Fact]
+        public async Task RegisterAndLoginAndGetMovies_ShouldReturn200Ok()
         {
-            var res = await _externalApiService.GetMovies(_moviesUrl);
+            var byteContent = RequestExtensions.CreateRequestBody(new UserDto
+            {
+                Username = "123456",
+                Password = "654321",
+            });
+            await _client.PostAsync("/api/Auth/register", byteContent);
+            var response_1 = await _client.PostAsync("/api/Auth/login", byteContent);
 
-            Assert.AreEqual(res.GetType(), typeof(List<MovieResponse>));
-            Assert.AreNotEqual(res.GetType(), typeof(List<MovieRequest>));
-            Assert.IsTrue(res.Count > 0);
+            var token = await response_1.Content.ReadAsStringAsync();
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            var response_2 = await _client.GetAsync("/api/movies");
+
+            response_2.StatusCode.Should().Be(HttpStatusCode.OK);
+
+            var content = await response_2.Content.ReadAsStringAsync();
+            var result = JsonConvert.DeserializeObject<List<MovieRequest>>(content);
+
+            result.Should().AllSatisfy(movie => movie.Title.Should().NotBeNullOrEmpty());
+            result.Should().AllSatisfy(movie => movie.Genre.Should().NotBeNullOrEmpty());
+            result.Should().AllSatisfy(movie => movie.Year.Should().NotBeNullOrEmpty());
+            result.Should().AllSatisfy(movie => movie.Poster.Should().NotBeNullOrEmpty());
         }
     }
 }

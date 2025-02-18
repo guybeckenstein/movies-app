@@ -1,5 +1,4 @@
-﻿using Api.ActionFilters;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Services.Services.Interfaces;
 
@@ -22,7 +21,6 @@ namespace Api.Controllers
         }
 
         [HttpGet(Name = "/")]
-        [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<IActionResult> GetMoviesAsync()
         {
             var moviesApiUrl = _configuration["ExternalLinks:Data:Movies"] 
