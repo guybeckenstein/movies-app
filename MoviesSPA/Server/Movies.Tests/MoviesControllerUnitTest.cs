@@ -71,12 +71,12 @@ namespace Movies.Tests
             response_2.StatusCode.Should().Be(HttpStatusCode.OK);
 
             var content = await response_2.Content.ReadAsStringAsync();
-            var result = JsonConvert.DeserializeObject<List<MovieRequest>>(content);
+            var result = JsonConvert.DeserializeObject<List<MovieResponse>>(content);
 
             result.Should().AllSatisfy(movie => movie.Title.Should().NotBeNullOrEmpty());
-            result.Should().AllSatisfy(movie => movie.Genre.Should().NotBeNullOrEmpty());
+            result.Should().AllSatisfy(movie => movie.Genres.Should().NotBeNullOrEmpty());
             result.Should().AllSatisfy(movie => movie.Year.Should().NotBeNullOrEmpty());
-            result.Should().AllSatisfy(movie => movie.Poster.Should().NotBeNullOrEmpty());
+            result.Should().AllSatisfy(movie => movie.PosterImg.Should().NotBeNullOrEmpty());
         }
     }
 }
