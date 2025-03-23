@@ -1,12 +1,12 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Movies.Models.DTOs
+namespace Movies.Models.DTOs;
+
+public sealed record UserDto
 {
-    public class UserDto
-    {
-        [Required]
-        public string Username { get; set; }
-        [Required]
-        public string Password { get; set; }
-    }
+    [Required]
+    public required string Username { get; init; }
+    [Required]
+    [MinLength(6)]
+    public required string Password { get; init; }
 }

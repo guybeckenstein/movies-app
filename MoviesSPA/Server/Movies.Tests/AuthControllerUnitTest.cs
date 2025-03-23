@@ -1,83 +1,65 @@
 ﻿using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Xunit;
 using Newtonsoft.Json;
 using Movies.Api;
-using Movies.Models.DTOs;
 using Movies.Models.Models;
 using Movies.Tests.Util;
+using Movies.Tests.Helpers;
+using Movies.Api.Enums;
 
-namespace Movies.Tests
+namespace Movies.Tests;
+
+public sealed class AuthControllerUnitTest(WebApplicationFactory<Program> factory) : BaseControllerUnitTest(factory)
 {
-    public class AuthControllerUnitTest : IClassFixture<WebApplicationFactory<Program>>
+    private const string BASE_URI = "/api/Auth";
+
+    [Fact]
+    public async Task Register_ShouldReturn400BadRequest()
     {
-        private readonly HttpClient _client;
+        var byteContent = RequestExtensions.CreateRequestBody(null);
+        var response = await _client.PostAsync($"{BASE_URI}/{AuthUriEnum.Register.ToString().ToLower()}", byteContent);
 
-        public AuthControllerUnitTest(WebApplicationFactory<Program> factory)
-        {
-            _client = factory.CreateClient();
-        }
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+    }
 
-        [Fact]
-        public async Task Register_ShouldReturn400BadRequest()
-        {
-            var byteContent = RequestExtensions.CreateRequestBody(null);
-            var response = await _client.PostAsync("/api/Auth/register", byteContent);
+    [Fact]
+    public async Task Register_ShouldReturn200OK()
+    {
+        var byteContent = RequestExtensions.CreateRequestBody(AuthControllerHelper.CreateUser());
+        var response = await _client.PostAsync($"{BASE_URI}/{AuthUriEnum.Register.ToString().ToLower()}", byteContent);
 
-            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-        }
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        [Fact]
-        public async Task Register_ShouldReturn200OK()
-        {
-            var byteContent = RequestExtensions.CreateRequestBody(new UserDto
-            {
-                Username = "123456",
-                Password = "654321",
-            });
-            var response = await _client.PostAsync("/api/Auth/register", byteContent);
+        var content = await response.Content.ReadAsStringAsync();
+        var result = JsonConvert.DeserializeObject<User>(content);
 
-            response.StatusCode.Should().Be(HttpStatusCode.OK);
+        result.Username.Should().NotBeNull();
+        result.PasswordHash.Should().NotBeNull();
+    }
 
-            var content = await response.Content.ReadAsStringAsync();
-            var result = JsonConvert.DeserializeObject<User>(content);
+    [Fact]
+    public async Task Login_ShouldReturn400BadRequest()
+    {
+        var byteContent = RequestExtensions.CreateRequestBody(AuthControllerHelper.CreateUser());
+        var response = await _client.PostAsync($"{BASE_URI}/{AuthUriEnum.Login.ToString().ToLower()}", byteContent);
 
-            result.Username.Should().NotBeNull();
-            result.PasswordHash.Should().NotBeNull();
-        }
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+    }
 
-        [Fact]
-        public async Task Login_ShouldReturn400BadRequest()
-        {
-            var byteContent = RequestExtensions.CreateRequestBody(new UserDto
-            {
-                Username = "123456",
-                Password = "654321",
-            });
-            var response = await _client.PostAsync("/api/Auth/login", byteContent);
+    [Fact]
+    public async Task RegisterAndLogin_ShouldReturn200Ok()
+    {
+        var byteContent = RequestExtensions.CreateRequestBody(AuthControllerHelper.CreateUser());
+        await _client.PostAsync($"{BASE_URI}/{AuthUriEnum.Register.ToString().ToLower()}", byteContent);
+        var response = await _client.PostAsync($"{BASE_URI}/{AuthUriEnum.Login.ToString().ToLower()}", byteContent);
 
-            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-        }
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        [Fact]
-        public async Task RegisterAndLogin_ShouldReturn200Ok()
-        {
-            var byteContent = RequestExtensions.CreateRequestBody(new UserDto
-            {
-                Username = "123456",
-                Password = "654321",
-            });
-            await _client.PostAsync("/api/Auth/register", byteContent);
-            var response = await _client.PostAsync("/api/Auth/login", byteContent);
+        var result = await response.Content.ReadAsStringAsync();
 
-            response.StatusCode.Should().Be(HttpStatusCode.OK);
-
-            var result = await response.Content.ReadAsStringAsync();
-
-            result.Should().NotBeNull();
-        }
+        result.Should().NotBeNull();
     }
 }

@@ -1,24 +1,20 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Movies.Services.Services.Interfaces;
 
-namespace Movies.Api.Controllers
+namespace Movies.Api.Controllers;
+
+public sealed class MoviesController(IConfiguration configuration, IExternalApiService externalApiService) : BaseController(configuration)
 {
-    [Route("api/[controller]")]
-    public class MoviesController : BaseController
+    private readonly IExternalApiService _externalApiService = externalApiService;
+
+    [HttpGet(Name = "/")]
+    public async Task<IActionResult> GetMoviesAsync()
     {
-        private readonly IExternalApiService _externalApiService;
+        var moviesApiUrl = _configuration["ExternalLinks:Data:Movies"] 
+            ?? throw new KeyNotFoundException($"configuration 'ExternalLinks:Data:Movies' does not exist in appsettings.json");
 
-        public MoviesController(IConfiguration configuration, IExternalApiService externalApiService) : base(configuration) => _externalApiService = externalApiService;
+        var res = await _externalApiService.GetMovies(moviesApiUrl);
 
-        [HttpGet(Name = "/")]
-        public async Task<IActionResult> GetMoviesAsync()
-        {
-            var moviesApiUrl = _configuration["ExternalLinks:Data:Movies"] 
-                ?? throw new ArgumentNullException($"configuration 'ExternalLinks:Data:Movies' does not exist in appsettings.json");
-
-            var res = await _externalApiService.GetMovies(moviesApiUrl);
-
-            return Ok(res);
-        }
+        return Ok(res);
     }
 }

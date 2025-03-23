@@ -1,43 +1,42 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace Movies.Models.Models
-{
-    public class MovieRequest : IValidatableObject
-    {
-        [Required]
-        public string Title { get; set; }
-        [Required]
-        [StringLength(4, MinimumLength = 4, ErrorMessage = "The year must be a string with the exact length of 4")]
-        public string Year { get; set; }
-        [Required]
-        public string Rated { get; set; }
-        public string Released { get; set; }
-        public string Runtime { get; set; }
-        [Required]
-        public string Genre { get; set; }
-        public string Director { get; set; }
-        public string Writer { get; set; }
-        public string Actors { get; set; }
-        public string Plot { get; set; }
-        public string Language { get; set; }
-        public string Country { get; set; }
-        public string Awards { get; set; }
-        [Required]
-        public string Poster { get; set; }
-        public string ImdbRating { get; set; }
-        public string ImdbVotes { get; set; }
-        public string ImdbID { get; set; }
-        public string Type { get; set; }
-        public string Response { get; set; }
-        public List<string> Images { get; set; }
+namespace Movies.Models.Models;
 
-        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+public sealed record MovieRequest : IValidatableObject
+{
+    [Required]
+    public required string Title { get; init; }
+    [Required]
+    [StringLength(4, MinimumLength = 4, ErrorMessage = "The year must be a string with the exact length of 4")]
+    public required string Year { get; init; }
+    [Required]
+    public required string Rated { get; init; }
+    public required string Released { get; init; }
+    public required string Runtime { get; init; }
+    [Required]
+    public required string Genre { get; init; }
+    public required string Director { get; init; }
+    public required string Writer { get; init; }
+    public required string Actors { get; init; }
+    public required string Plot { get; init; }
+    public required string Language { get; init; }
+    public required string Country { get; init; }
+    public required string Awards { get; init; }
+    [Required]
+    public required string Poster { get; init; }
+    public required string ImdbRating { get; init; }
+    public required string ImdbVotes { get; init; }
+    public required string ImdbID { get; init; }
+    public required string Type { get; init; }
+    public required string Response { get; init; }
+    public required List<string> Images { get; init; }
+
+    public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+    {
+        if (!Released.Contains(Year))
         {
-            if (!Released.Contains(Year))
-            {
-                yield return new ValidationResult("Release date attribute must have same year", new[] { nameof(Released) });
-            }
+            yield return new ValidationResult("Release date attribute must have same year", [nameof(Released)]);
         }
     }
 }

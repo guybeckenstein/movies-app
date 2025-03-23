@@ -2,11 +2,10 @@
 using Movies.Models.DTOs;
 using Movies.Models.Models;
 
-namespace Movies.Services.Services.Interfaces
+namespace Movies.Services.Services.Interfaces;
+
+public interface IAuthService
 {
-    public interface IAuthService
-    {
-        User? Register(UserDto user);
-        string? Login(UserDto user, string token);
-    }
+    User? Register(UserDto user);
+    string? Login(UserDto user, string token);
 }

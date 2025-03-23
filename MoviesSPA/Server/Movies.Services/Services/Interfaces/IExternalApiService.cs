@@ -2,10 +2,9 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Movies.Services.Services.Interfaces
+namespace Movies.Services.Services.Interfaces;
+
+public interface IExternalApiService
 {
-    public interface IExternalApiService
-    {
-        Task<List<MovieResponse>> GetMovies(string url);
-    }
+    Task<IEnumerable<MovieResponse>> GetMovies(string url);
 }

@@ -1,12 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace Movies.Api.Controllers
+namespace Movies.Api.Controllers;
+
+[ApiController]
+[Route("api/[controller]")]
+public abstract class BaseController(IConfiguration configuration) : ControllerBase
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    public class BaseController : ControllerBase
-    {
-        protected readonly IConfiguration _configuration;
-        protected BaseController(IConfiguration configuration) => _configuration = configuration;
-    }
+    protected readonly IConfiguration _configuration = configuration;
 }

@@ -1,12 +1,11 @@
 ﻿using System.Collections.Generic;
 
-namespace Movies.Models.DTOs
+namespace Movies.Models.DTOs;
+
+public sealed record MovieResponse
 {
-    public class MovieResponse
-    {
-        public string Title { get; set; }
-        public string Year { get; set; }
-        public List<string> Genres { get; set; }
-        public string PosterImg { get; set; }
-    }
+    public required string Title { get; init; }
+    public required string Year { get; init; }
+    public required List<string> Genres { get; init; }
+    public required string PosterImg { get; init; }
 }

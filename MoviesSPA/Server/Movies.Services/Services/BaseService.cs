@@ -1,10 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
 
-namespace Movies.Services.Services
+namespace Movies.Services.Services;
+
+public abstract class BaseService<T>(ILogger<T> logger)
 {
-    public class BaseService<T>
-    {
-        protected readonly ILogger<T> _logger;
-        protected BaseService(ILogger<T> logger) => _logger = logger;
-    }
+    protected readonly ILogger<T> _logger = logger;
 }
