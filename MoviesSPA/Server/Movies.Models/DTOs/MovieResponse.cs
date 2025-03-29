@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Movies.Models.DTOs;
+namespace Movies.Data.DTOs;
 
 public sealed record MovieResponse
 {

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace Movies.Models.Models;
+namespace Movies.Data.Models;
 
 public sealed record MovieRequest : IValidatableObject
 {

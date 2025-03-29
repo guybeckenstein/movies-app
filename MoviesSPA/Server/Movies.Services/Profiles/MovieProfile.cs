@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using Movies.Models.DTOs;
-using Movies.Models.Models;
+using Movies.Data.DTOs;
+using Movies.Data.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;

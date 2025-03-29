@@ -12,9 +12,6 @@
     <ImplicitUsings>disable</ImplicitUsings>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Movies.Models\Movies.Models.csproj" />
-  </ItemGroup>
-  <ItemGroup>
     <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
@@ -24,8 +21,12 @@
     <PackageReference Include="Microsoft.AspNetCore.Cryptography.Internal" Version="8.0.13" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="Microsoft.Extensions.Identity.Core" Version="8.0.13" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.5.0" />
     <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="6.1.0" />
     <PackageReference Include="System.Text.Json" Version="9.0.2" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Movies.Data\Movies.Repository.csproj" />
   </ItemGroup>
 </Project>

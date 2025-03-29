@@ -1,4 +1,4 @@
-﻿using Movies.Models.DTOs;
+﻿using Movies.Data.DTOs;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 

@@ -1,8 +1,11 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.StaticFiles;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Movies.Api.Filters.ActionFilters;
 using Movies.Api.Middleware;
+using Movies.Data.Repositories;
+using Movies.Data.Repositories.Interfaces;
+using Movies.Repository;
 using Movies.Services.Profiles;
 using Movies.Services.Services;
 using Movies.Services.Services.Interfaces;
@@ -27,9 +30,18 @@ public class Program
         // Serilog is logging provider
         builder.Logging.ClearProviders();
         builder.Logging.AddSerilog(Log.Logger);
-        // Dependency injection
+        // DB
+        builder.Services
+            .AddEntityFrameworkNpgsql()
+            .AddDbContext<MyDbContext>(options => 
+                options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+        // Register dependency injections and classes
         builder.Services.AddScoped<IAuthService, AuthService>();
         builder.Services.AddScoped<IExternalApiService, ExternalApiService>();
+
+        builder.Services.AddScoped<IUserRepository, UserRepository>();
+
+        builder.Services.AddScoped<JwtAuthFilter>();
         // Add services to the container
         builder.Services.AddControllers();
         builder.Services.AddEndpointsApiExplorer();

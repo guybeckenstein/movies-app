@@ -5,7 +5,7 @@ VisualStudioVersion = 17.13.35806.99
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Movies.Api", "Movies.Api\Movies.Api.csproj", "{00D9C465-1AA9-C303-5647-46483F5BB1D5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Movies.Models", "Movies.Models\Movies.Models.csproj", "{D5391C20-46A6-763D-BEF2-5B283CFCDBA3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Movies.Data", "Movies.Models\Movies.Data.csproj", "{D5391C20-46A6-763D-BEF2-5B283CFCDBA3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Movies.Services", "Movies.Services\Movies.Services.csproj", "{B631455A-27FB-AF62-F779-E0765AFD47B7}"
 EndProject
@@ -15,6 +15,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Movies.Repository", "Movies.Data\Movies.Repository.csproj", "{FEC51499-4EC5-4B7A-BADE-3E9C73D97B95}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -38,6 +40,10 @@ Global
 		{52453C0D-8020-896F-C58B-8BF22A3529A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{52453C0D-8020-896F-C58B-8BF22A3529A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{52453C0D-8020-896F-C58B-8BF22A3529A2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FEC51499-4EC5-4B7A-BADE-3E9C73D97B95}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FEC51499-4EC5-4B7A-BADE-3E9C73D97B95}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FEC51499-4EC5-4B7A-BADE-3E9C73D97B95}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FEC51499-4EC5-4B7A-BADE-3E9C73D97B95}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

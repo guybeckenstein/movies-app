@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
 using Flurl.Http;
 using Microsoft.Extensions.Logging;
-using Movies.Models.DTOs;
-using Movies.Models.Models;
+using Movies.Data.DTOs;
+using Movies.Data.Models;
 using Movies.Services.Profiles;
 using Movies.Services.Services.Interfaces;
 using System;

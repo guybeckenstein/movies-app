@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Movies.Api.Filters.ActionFilters;
 using Movies.Services.Services.Interfaces;
 
 namespace Movies.Api.Controllers;
 
+[ServiceFilter(typeof(JwtAuthFilter))]
 public sealed class MoviesController(IConfiguration configuration, IExternalApiService externalApiService) : BaseController(configuration)
 {
     private readonly IExternalApiService _externalApiService = externalApiService;

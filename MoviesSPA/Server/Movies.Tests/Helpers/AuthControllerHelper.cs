@@ -1,15 +1,16 @@
-﻿using Movies.Models.DTOs;
+﻿using Movies.Data.DTOs;
 
 namespace Movies.Tests.Helpers;
 
 internal static class AuthControllerHelper
 {
-    internal static UserDto CreateUser()
+    internal static UserLogin CreateUser()
     {
-        return new UserDto
+        return new UserLogin
         {
             Username = "123456",
             Password = "654321",
+            RememberMe = false,
         };
     }
 }

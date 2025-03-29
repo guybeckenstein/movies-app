@@ -1,11 +1,11 @@
 ﻿#nullable enable
-using Movies.Models.DTOs;
-using Movies.Models.Models;
+using Movies.Data.DTOs;
+using System.Threading.Tasks;
 
 namespace Movies.Services.Services.Interfaces;
 
 public interface IAuthService
 {
-    User? Register(UserDto user);
-    string? Login(UserDto user, string token);
+    Task<bool?> Register(UserRegistration model);
+    Task<string?> Login(UserLogin model, string token);
 }

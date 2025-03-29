@@ -13,7 +13,7 @@ public sealed class LoggingMiddleware(RequestDelegate next, ILogger<LoggingMiddl
         var stopwatch = Stopwatch.StartNew();
 
         var method = context.Request.Method;
-        var path = context.Request.Path;
+        var path = context.Request.Path.ToString();
 
         _logger.LogInformation($"{method} {path} - Starting request");
 
@@ -31,7 +31,7 @@ public sealed class LoggingMiddleware(RequestDelegate next, ILogger<LoggingMiddl
         finally
         {
             stopwatch.Stop();
-            _logger.LogDebug($"{method} {path} - Completed request in {stopwatch.ElapsedMilliseconds}ms");
+            _logger.LogDebug($"{method} {path} - Completed request in {stopwatch.ElapsedMilliseconds.ToString()}ms");
             _logger.LogInformation($"{method} {path} - Completed request");
         }
     }

@@ -7,6 +7,7 @@ namespace Movies.Tests;
 
 public abstract class BaseControllerUnitTest : IClassFixture<WebApplicationFactory<Program>>
 {
+    protected const string BASE_URI = "/api";
     protected readonly HttpClient _client;
 
     internal BaseControllerUnitTest(WebApplicationFactory<Program> factory)
